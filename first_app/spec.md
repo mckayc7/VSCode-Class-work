@@ -49,8 +49,7 @@ sizing a floor beam or deck joist.
 
 ## Calculations
 - Reactions from statics.
-- Shear V(x) and moment M(x) along the beam, at 1 ft spacing or finer,
-  plus exactly at every load point and load start/end.
+- Shear V(x) and moment M(x) along the beam plus exactly at every load point and load start/end.
 - Deflection y(x) by integrating M/EI twice with the boundary conditions
   for the support type (y = 0 at both supports; or y = 0 and slope = 0 at
   the fixed end).

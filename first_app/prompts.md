@@ -4,3 +4,38 @@
 - **Asked:** Commit changes with the note "creating beam app".
 - **Changed:** Added the required prompt log entry and prepared the new beam app files for commit.
 - **Worked:** Pending commit verification.
+
+## 2026-11-09
+- **Asked:** Read the beam specification, check its equations, and identify ambiguities, missing requirements, inconsistencies, implementation difficulties, and improvements without writing code.
+- **Changed:** Reviewed `first_app/spec.md` and numerically checked all four validation examples.
+- **Worked:** Yes; the review findings are complete and no application code was changed.
+
+## 2026-11-10
+- **Asked:** Read the beam specification and build the described app as a single `index.html` using plain HTML, CSS, and JavaScript.
+- **Changed:** Built the responsive Beam Designer UI, load controls, beam/diagram canvas rendering, drag interaction, calculation functions, checks, reactions, and section recommendation in `first_app/index.html`.
+- **Worked:** Yes; static HTML/function checks passed. A browser executable and Node.js were unavailable for runtime validation.
+
+## 2026-11-10
+- **Asked:** Fix load magnitude and location fields so they allow normal editing and decimal values.
+- **Changed:** Stopped rebuilding the load form on every keystroke, retained in-progress input until change/blur, and changed load fields to `step="any"` for decimal entry.
+- **Worked:** Yes; static checks confirmed the new input and change handlers are present.
+
+## 2026-11-10
+- **Asked:** Move reaction-force arrows below the beam for upward reactions and above it for downward reactions, with the point oriented in the force direction.
+- **Changed:** Added sign-aware reaction arrow rendering for both simply supported and cantilever beams.
+- **Worked:** Yes; static checks confirmed sign-aware arrows are used for both support types.
+
+## 2026-11-10
+- **Asked:** Move reaction arrows away from the beam support joints.
+- **Changed:** Added a 30 px clearance between each reaction arrowhead and the beam while preserving the force direction.
+- **Worked:** Yes; static checks confirmed the clearance is applied to both upward and downward reaction arrows.
+
+## 2026-11-10
+- **Asked:** Show the beam length as a spanning dimension instead of endpoint `ft` labels.
+- **Changed:** Replaced endpoint labels with a dimension line and inward-pointing end markers below the beam.
+- **Worked:** Yes; static checks confirmed the endpoint beam labels were replaced by the spanning dimension line.
+
+## 2026-11-10
+- **Asked:** Fix the upside-down support triangles in the beam and loads visual.
+- **Changed:** Reversed the support triangle vertices so each point meets the beam and the base sits below it.
+- **Worked:** Yes; static checks confirmed the support geometry was updated.
