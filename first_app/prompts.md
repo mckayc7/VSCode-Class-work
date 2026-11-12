@@ -49,3 +49,8 @@
 - **Asked:** Apply the failure-marker requirements from `spec.md` to `index.html`.
 - **Changed:** Added live bending and deflection failure markers to the beam visual at the governing locations, with labels and actual-versus-allowable values; markers hide when checks pass.
 - **Worked:** Yes; static checks confirmed both failure markers, governing locations, and pass/fail visibility gates.
+
+## 2026-11-12
+- **Asked:** Add an overhanging beam as an analysis option.
+- **Changed:** Added a right-overhang support mode with support spacing and overhang controls, a 20 ft + 4 ft example, support-aware reactions, diagrams, deflection, markers, load bounds, and drawing.
+- **Worked:** Yes; static checks confirmed the overhang mode, geometry controls, support-aware drawing, and total-length diagram scaling.

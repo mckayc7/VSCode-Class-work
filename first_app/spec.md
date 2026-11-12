@@ -11,8 +11,12 @@ A civil engineering student checking a homework beam, or an engineer
 sizing a floor beam or deck joist.
 
 ## Inputs
-- Support type: Simply supported or Cantilever (fixed at the left end).
+- Support type: Simply supported, Overhanging beam (two simple supports with
+  a right-side free overhang), or Cantilever (fixed at the left end).
 - Span: 4 to 40 ft, set with a slider and a number box that stay in sync.
+- For an overhanging beam, the span input is the distance between supports and
+  a separate overhang length input sets the right-side extension. Loads and
+  diagrams use the total beam length.
 - Loads, listed in a panel where each can be edited or removed:
   - Point loads: magnitude (kips, downward positive) and position (ft).
     A new point load starts at midspan (at the free end of a cantilever).
@@ -46,9 +50,13 @@ sizing a floor beam or deck joist.
 
 - Deflection limit: L/240 or L/360 (default L/360).
 - Self-weight is ignored.
+- The overhanging-beam example uses a 20 ft support spacing, a 4 ft right
+  overhang, and a 1 kip/ft uniform load over the total beam length.
 
 ## Calculations
 - Reactions from statics.
+- For an overhanging beam, reactions are calculated at the left support and at
+  the support located one support spacing from the left end.
 - Shear V(x) and moment M(x) along the beam plus exactly at every load point and load start/end.
 - Deflection y(x) by integrating M/EI twice with the boundary conditions
   for the support type (y = 0 at both supports; or y = 0 and slope = 0 at
@@ -111,6 +119,9 @@ sizing a floor beam or deck joist.
    end (PL^3/3EI); L/360 = 0.333 in, so deflection fails.
 4. Simply supported 12 ft 2x10 joist, uniform 0.05 kip/ft: max moment
    0.90 kip-ft; fb = 0.505 ksi; max deflection 0.147 in; both pass.
+- Overhanging 20 ft support spacing with a 4 ft right overhang, W12x26, and
+  uniform 1 kip/ft over the total 24 ft beam: verify reactions, the negative
+  moment over the right support, and deflection on the overhang.
 
 ## Out of scope
 - Self-weight, shear stress, lateral-torsional buckling, load
