@@ -54,3 +54,8 @@
 - **Asked:** Add an overhanging beam as an analysis option.
 - **Changed:** Added a right-overhang support mode with support spacing and overhang controls, a 20 ft + 4 ft example, support-aware reactions, diagrams, deflection, markers, load bounds, and drawing.
 - **Worked:** Yes; static checks confirmed the overhang mode, geometry controls, support-aware drawing, and total-length diagram scaling.
+
+## 2026-11-12
+- **Asked:** Make support-spacing and right-overhang inputs smooth and editable without resetting to 20.
+- **Changed:** Separated live calculation updates from blur/change normalization, preserving in-progress input text and allowing decimal editing.
+- **Worked:** Yes; static checks confirmed live and commit handlers are separate and the old per-keystroke reset path is gone.
