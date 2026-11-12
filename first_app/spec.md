@@ -13,7 +13,8 @@ sizing a floor beam or deck joist.
 ## Inputs
 - Support type: Simply supported, Overhanging beam (two simple supports with
   a right-side free overhang), or Cantilever (fixed at the left end).
-- Span: 4 to 40 ft, set with a slider and a number box that stay in sync.
+- Span: a positive length in ft, entered in a number box. Negative values are
+  not allowed.
 - For an overhanging beam, the span input is the distance between supports and
   a separate overhang length input sets the right-side extension. Loads and
   diagrams use the total beam length.
