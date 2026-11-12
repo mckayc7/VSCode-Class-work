@@ -39,3 +39,13 @@
 - **Asked:** Fix the upside-down support triangles in the beam and loads visual.
 - **Changed:** Reversed the support triangle vertices so each point meets the beam and the base sits below it.
 - **Worked:** Yes; static checks confirmed the support geometry was updated.
+
+## 2026-11-12
+- **Asked:** Update the first_app spec so failed bending or deflection checks show a labeled failure point on the beam visual.
+- **Changed:** Added requirements for signposted bending and deflection failure markers, their locations and values, simultaneous display, and live visibility updates.
+- **Worked:** Yes; the specification was updated without changing application code.
+
+## 2026-11-12
+- **Asked:** Apply the failure-marker requirements from `spec.md` to `index.html`.
+- **Changed:** Added live bending and deflection failure markers to the beam visual at the governing locations, with labels and actual-versus-allowable values; markers hide when checks pass.
+- **Worked:** Yes; static checks confirmed both failure markers, governing locations, and pass/fail visibility gates.

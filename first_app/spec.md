@@ -73,6 +73,16 @@ sizing a floor beam or deck joist.
 - Two check cards: Bending and Deflection. Each shows the actual value, the
   allowable value, a bar for the ratio (green under 70%, amber 70-100%,
   red over 100%), and PASS or FAIL.
+- If the bending check fails, show a clearly labeled failure marker on the
+  beam visual at the location of maximum absolute bending moment. Label it
+  "Bending failure" and include the location in ft and actual stress versus
+  allowable stress.
+- If the deflection check fails, show a clearly labeled failure marker on the
+  beam visual at the location of maximum absolute deflection. Label it
+  "Deflection failure" and include the location in ft and actual deflection
+  versus allowable deflection.
+- If both checks fail, show both markers. Failure markers update immediately
+  whenever inputs change and are hidden when their corresponding check passes.
 - A line suggesting the lightest passing section, with a button to use it.
 - Everything updates immediately whenever any input changes.
 
