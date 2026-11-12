@@ -64,3 +64,8 @@
 - **Asked:** Remove the upper limits from support spacing and right overhang while preventing negative values.
 - **Changed:** Removed the max attributes and upper clamps, retained nonnegative validation, and removed the bounded span slider.
 - **Worked:** Yes; static checks confirmed no upper bounds remain and negative values are clamped out.
+
+## 2026-11-12
+- **Asked:** Rerun the validation cases from `spec.md` to ensure recent changes did not break calculations.
+- **Changed:** Rechecked all four cases and corrected the deflection integration unit conversion from feet to inches; overhang deflection limits now use total beam length.
+- **Worked:** Yes; reactions, moments, stresses, deflections, and pass/fail results match the specification.
