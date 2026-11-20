@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Will It Break? | Build Mode Prototype</title>
+  <style>
+    :root {
+      --ink: #17213a;
+      --muted: #69738a;
+      --line: #dce3ee;
+      --card: #ffffff;
+      --blue: #356ae6;
+      --blue-soft: #edf3ff;
+      --orange: #e27b36;
+      --danger: #c94b55;
+      --shadow: 0 16px 38px rgba(32, 48, 82, .09);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #f5f7fb;
+      font: 15px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+    }
+    button { font: inherit; }
+    .app { max-width: 1440px; margin: 0 auto; padding: 28px; }
+    header { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; margin-bottom: 24px; }
+    h1, h2, p { margin: 0; }
+    h1 { font-size: clamp(26px, 4vw, 40px); letter-spacing: -.04em; }
+    h2 { font-size: 17px; }
+    .eyebrow { color: var(--blue); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .subtitle { color: var(--muted); margin-top: 6px; max-width: 690px; }
+    .mode-switch { display: flex; padding: 4px; background: #e9eef8; border-radius: 12px; }
+    .mode-switch button { border: 0; border-radius: 9px; color: var(--muted); background: transparent; padding: 10px 18px; font-weight: 750; cursor: pointer; }
+    .mode-switch button.active { color: var(--ink); background: white; box-shadow: 0 2px 8px rgba(32,48,82,.12); }
+    .layout { display: grid; grid-template-columns: 280px minmax(0, 1fr) 250px; gap: 20px; align-items: start; }
+    .card { background: var(--card); border: 1px solid #e9edf5; border-radius: 18px; box-shadow: var(--shadow); }
+    .controls, .summary { padding: 20px; }
+    .controls h2, .summary h2 { margin-bottom: 14px; }
+    .tool-list { display: grid; gap: 9px; }
+    .tool {
+      display: flex; align-items: center; gap: 10px; text-align: left; width: 100%;
+      border: 1px solid var(--line); background: white; color: var(--ink);
+      padding: 12px; border-radius: 11px; cursor: pointer; font-weight: 700;
+    }
+    .tool:hover { border-color: #9db5f4; }
+    .tool.active { border-color: var(--blue); background: var(--blue-soft); color: #204dac; }
+    .tool-icon { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 8px; background: #eef1f7; color: var(--blue); font-weight: 900; }
+    .tool.active .tool-icon { background: #dbe7ff; }
+    .divider { height: 1px; background: var(--line); margin: 19px 0; }
+    .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .secondary, .danger { border: 1px solid var(--line); background: white; border-radius: 10px; padding: 10px; cursor: pointer; font-weight: 700; }
+    .secondary:disabled { opacity: .45; cursor: not-allowed; }
+    .danger { color: var(--danger); border-color: #f0cdd0; }
+    .joint-form { gap: 7px; margin-top: 16px; }
+    .joint-form:not([hidden]) { display: grid; }
+    .joint-form label { color: var(--muted); font-size: 12px; font-weight: 750; }
+    .joint-form label span { font-weight: 500; }
+    .joint-form input { width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px; color: var(--ink); background: #fbfcff; }
+    .primary { border: 0; border-radius: 10px; padding: 10px; color: white; background: var(--blue); cursor: pointer; font-weight: 800; margin-top: 4px; }
+    .primary:hover { background: #2857c7; }
+    .details-card { display: none; margin-top: 14px; border: 1px solid #dbe5fa; border-radius: 12px; background: #f8fbff; overflow: hidden; }
+    .details-card.visible { display: block; }
+    .details-card h3 { margin: 0; padding: 11px 12px; border-bottom: 1px solid #dbe5fa; color: #31599f; font-size: 13px; }
+    .details-grid { display: grid; grid-template-columns: 88px 1fr; gap: 7px 8px; padding: 11px 12px 12px; font-size: 12px; }
+    .details-grid dt { color: var(--muted); }
+    .details-grid dd { margin: 0; font-weight: 750; overflow-wrap: anywhere; }
+    .member-fbd { margin: 0 12px 12px; border: 1px solid #dbe5fa; border-radius: 10px; background: white; }
+    .member-fbd svg { display: block; width: 100%; height: 92px; min-height: 92px; cursor: default; }
+    .fbd-member { stroke: #49617e; stroke-width: 5; stroke-linecap: round; }
+    .fbd-arrow { stroke: #356ae6; stroke-width: 3; fill: none; marker-end: url(#fbdArrowHead); }
+    .fbd-label { fill: #69738a; font-size: 10px; text-anchor: middle; }
+    .hint { margin-top: 18px; padding: 12px; border-radius: 11px; background: #fff8eb; color: #765423; font-size: 13px; }
+    .canvas-card { overflow: hidden; }
+    .canvas-head { display: flex; justify-content: space-between; gap: 16px; padding: 18px 22px; border-bottom: 1px solid var(--line); align-items: center; }
+    .canvas-head p { color: var(--muted); font-size: 13px; }
+    .live-pill { white-space: nowrap; color: #21744d; background: #e9f8ef; border-radius: 99px; padding: 6px 10px; font-size: 12px; font-weight: 800; }
+    .drawing { padding: 18px; background: linear-gradient(#fbfcff, #f8faff); }
+    svg { display: block; width: 100%; height: auto; min-height: 430px; cursor: crosshair; }
+    .grid-line { stroke: #e6ebf4; stroke-width: .8; }
+    .axis-label { fill: #7d879a; font-size: 11px; }
+    .member { stroke: #49617e; stroke-width: 4; stroke-linecap: round; cursor: pointer; }
+    .member:hover { stroke: var(--orange); stroke-width: 6; }
+    .member.selected { stroke: var(--danger); stroke-width: 7; }
+    .joint { fill: white; stroke: var(--blue); stroke-width: 3; cursor: pointer; }
+    .joint.deck { fill: #e7efff; }
+    .joint.support { fill: #ffd99c; stroke: #b9701f; }
+    .joint.selected { stroke: var(--orange); stroke-width: 5; }
+    .support-symbol { fill: #b9701f; opacity: .92; }
+    .summary-grid { display: grid; gap: 10px; }
+    .metric { padding: 12px; border-radius: 12px; background: #f6f8fc; }
+    .metric-label { color: var(--muted); font-size: 12px; }
+    .metric-value { font-size: 23px; font-weight: 800; margin-top: 2px; }
+    .legend { margin-top: 20px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; margin-top: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .footer-note { margin-top: 18px; color: var(--muted); font-size: 12px; }
+    .test-only { display: none; }
+    @media (max-width: 1050px) { .layout { grid-template-columns: 240px minmax(0, 1fr); } .summary { grid-column: 1 / -1; } .summary-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 720px) { .app { padding: 18px 12px; } header { display: block; } .mode-switch { margin-top: 16px; width: max-content; } .layout { display: block; } .controls, .summary { margin-top: 14px; } .canvas-card { margin-top: 14px; } svg { min-height: 300px; } .summary-grid { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <div class="eyebrow">Structural design game · prototype</div>
+        <h1>Will It Break?</h1>
+        <p class="subtitle">Build a truss across a 60 ft gap. Add joints on the grid, connect members, and watch the design cost update as you work.</p>
+      </div>
+      <div class="mode-switch" aria-label="App mode">
+        <button class="active" data-mode="build">Build mode</button>
+        <button data-mode="test">Test mode</button>
+      </div>
+    </header>
+
+    <section class="layout">
+      <aside class="card controls">
+        <h2>Build tools</h2>
+        <div class="tool-list" role="toolbar" aria-label="Build tools">
+          <button class="tool active" data-tool="select"><span class="tool-icon">↖</span><span>Select / inspect</span></button>
+          <button class="tool" data-tool="joint"><span class="tool-icon">＋</span><span>Add joint</span></button>
+          <button class="tool" data-tool="member"><span class="tool-icon">╱</span><span>Connect members</span></button>
+          <button class="tool" data-tool="delete"><span class="tool-icon">−</span><span>Delete elements</span></button>
+        </div>
+        <div class="divider"></div>
+        <div class="button-row">
+          <button class="secondary" id="undo" disabled>Undo</button>
+          <button class="danger" id="reset">Reset</button>
+        </div>
+        <form class="joint-form" id="jointForm" hidden>
+          <label for="jointX">X location <span>(ft)</span></label>
+          <input id="jointX" name="jointX" type="number" min="0" max="60" step="1" value="15" required>
+          <label for="jointY">Y location <span>(ft)</span></label>
+          <input id="jointY" name="jointY" type="number" min="0" max="20" step="1" value="10" required>
+          <button class="primary" type="submit">Add joint</button>
+        </form>
+        <div class="hint" id="hint">Select a joint or member to inspect it.</div>
+        <section class="details-card" id="detailsCard" aria-live="polite">
+          <h3 id="detailsTitle">Selection details</h3>
+          <dl class="details-grid" id="detailsGrid"></dl>
+        </section>
+        <p class="footer-note">Tip: The blue deck joints and supports are fixed. User joints snap to the 1 ft grid.</p>
+      </aside>
+
+      <section class="card canvas-card">
+        <div class="canvas-head">
+          <div>
+            <h2>Bridge site</h2>
+            <p id="status">Starter Warren truss loaded. Add, connect, or delete members to customize it.</p>
+          </div>
+          <span class="live-pill">● Live design</span>
+        </div>
+        <div class="drawing">
+          <svg id="bridge" viewBox="0 0 900 520" role="img" aria-label="Interactive 60 foot bridge building site"></svg>
+        </div>
+      </section>
+
+      <aside class="card summary">
+        <h2>Design summary</h2>
+        <div class="summary-grid">
+          <div class="metric"><div class="metric-label">Joints</div><div class="metric-value" id="jointCount">7</div></div>
+          <div class="metric"><div class="metric-label">Members</div><div class="metric-value" id="memberCount">0</div></div>
+          <div class="metric"><div class="metric-label">Member length</div><div class="metric-value"><span id="length">0.0</span><small> ft</small></div></div>
+          <div class="metric"><div class="metric-label">Estimated cost</div><div class="metric-value">$<span id="cost">3,500</span></div></div>
+        </div>
+        <div class="legend">
+          <h2>Legend</h2>
+          <div class="legend-item"><span class="dot" style="background:#e7efff;border:2px solid #356ae6"></span> Fixed deck joint</div>
+          <div class="legend-item"><span class="dot" style="background:#ffd99c;border:2px solid #b9701f"></span> Required support</div>
+          <div class="legend-item"><span class="dot" style="background:white;border:2px solid #356ae6"></span> User joint</div>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <script>
+    const svg = document.querySelector("#bridge");
+    const status = document.querySelector("#status");
+    const hint = document.querySelector("#hint");
+    const undoButton = document.querySelector("#undo");
+    const jointCount = document.querySelector("#jointCount");
+    const memberCount = document.querySelector("#memberCount");
+    const lengthOutput = document.querySelector("#length");
+    const costOutput = document.querySelector("#cost");
+    const jointForm = document.querySelector("#jointForm");
+    const jointXInput = document.querySelector("#jointX");
+    const jointYInput = document.querySelector("#jointY");
+    const detailsCard = document.querySelector("#detailsCard");
+    const detailsTitle = document.querySelector("#detailsTitle");
+    const detailsGrid = document.querySelector("#detailsGrid");
+    const NS = "http://www.w3.org/2000/svg";
+    const site = { left: 70, right: 830, top: 55, bottom: 425, width: 760, height: 370 };
+    const scale = site.width / 60;
+    const baseJoints = Array.from({ length: 7 }, (_, index) => ({ id: `d${index}`, x: index * 10, y: 0, fixed: true, support: index === 0 || index === 6, deck: true }));
+    const starterTopJoints = Array.from({ length: 6 }, (_, index) => ({ id: `t${index}`, x: index * 10 + 5, y: 10, fixed: false, deck: false }));
+    const starterJoints = [...baseJoints, ...starterTopJoints];
+    const starterMembers = [
+      ...Array.from({ length: 6 }, (_, index) => ({ id: `bottom${index}`, a: `d${index}`, b: `d${index + 1}` })),
+      ...Array.from({ length: 5 }, (_, index) => ({ id: `top${index}`, a: `t${index}`, b: `t${index + 1}` })),
+      ...Array.from({ length: 6 }, (_, index) => ({ id: `diag${index}`, a: `d${index}`, b: `t${index}` })),
+      ...Array.from({ length: 6 }, (_, index) => ({ id: `diag${index + 6}`, a: `t${index}`, b: `d${index + 1}` }))
+    ];
+    let joints = starterJoints.map(joint => ({ ...joint }));
+    let members = starterMembers.map(member => ({ ...member }));
+    let history = [];
+    let tool = "select";
+    let selectedJoint = null;
+    let selectedMember = null;
+
+    const svgElement = (name, attrs = {}) => {
+      const element = document.createElementNS(NS, name);
+      Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
+      return element;
+    };
+
+    function point(joint) {
+      return { x: site.left + joint.x * scale, y: site.bottom - joint.y * scale };
+    }
+
+    function snapshot() {
+      return { joints: joints.map(joint => ({ ...joint })), members: members.map(member => ({ ...member })) };
+    }
+
+    function restore(state) {
+      joints = state.joints.map(joint => ({ ...joint }));
+      members = state.members.map(member => ({ ...member }));
+      selectedJoint = null;
+      selectedMember = null;
+      clearDetails();
+      render();
+    }
+
+    function record() {
+      history.push(snapshot());
+      undoButton.disabled = false;
+    }
+
+    function setStatus(message) {
+      status.textContent = message;
+    }
+
+    function render() {
+      svg.replaceChildren();
+      const grid = svgElement("g");
+      for (let x = 0; x <= 60; x += 1) {
+        const px = site.left + x * scale;
+        grid.append(svgElement("line", { x1: px, y1: site.top, x2: px, y2: site.bottom, class: x % 10 === 0 ? "grid-line major" : "grid-line" }));
+        if (x % 10 === 0) {
+          const label = svgElement("text", { x: px, y: site.bottom + 27, "text-anchor": "middle", class: "axis-label" });
+          label.textContent = `${x} ft`;
+          grid.append(label);
+        }
+      }
+      for (let y = 0; y <= 20; y += 1) {
+        const py = site.bottom - y * scale;
+        grid.append(svgElement("line", { x1: site.left, y1: py, x2: site.right, y2: py, class: "grid-line" }));
+        if (y % 5 === 0) {
+          const label = svgElement("text", { x: site.left - 14, y: py + 4, "text-anchor": "end", class: "axis-label" });
+          label.textContent = `${y} ft`;
+          grid.append(label);
+        }
+      }
+      svg.append(grid);
+
+      members.forEach(member => {
+        const a = point(joints.find(joint => joint.id === member.a));
+        const b = point(joints.find(joint => joint.id === member.b));
+        const line = svgElement("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: `member${selectedMember === member.id ? " selected" : ""}` });
+        line.addEventListener("click", event => { event.stopPropagation(); handleMember(member.id); });
+        svg.append(line);
+      });
+
+      joints.forEach(joint => {
+        const p = point(joint);
+        if (joint.support) {
+          const support = svgElement("path", { d: `M ${p.x - 13} ${p.y + 24} L ${p.x + 13} ${p.y + 24} L ${p.x} ${p.y + 2} Z`, class: "support-symbol" });
+          svg.append(support);
+        }
+        const circle = svgElement("circle", { cx: p.x, cy: p.y, r: joint.fixed ? 8 : 7, class: `joint${joint.deck ? " deck" : ""}${joint.support ? " support" : ""}${selectedJoint === joint.id ? " selected" : ""}` });
+        circle.addEventListener("click", event => { event.stopPropagation(); handleJoint(joint.id); });
+        svg.append(circle);
+      });
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const length = members.reduce((total, member) => {
+        const a = joints.find(joint => joint.id === member.a);
+        const b = joints.find(joint => joint.id === member.b);
+        return total + Math.hypot(b.x - a.x, b.y - a.y);
+      }, 0);
+      jointCount.textContent = joints.length;
+      memberCount.textContent = members.length;
+      lengthOutput.textContent = length.toFixed(1);
+      costOutput.textContent = (joints.length * 500 + length * 100).toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+
+    function clearDetails() {
+      detailsCard.classList.remove("visible");
+      detailsGrid.replaceChildren();
+      detailsCard.querySelectorAll(".member-fbd").forEach(element => element.remove());
+    }
+
+    function showDetails(title, rows) {
+      detailsTitle.textContent = title;
+      detailsGrid.replaceChildren();
+      detailsCard.querySelectorAll(".member-fbd").forEach(element => element.remove());
+      rows.forEach(([label, value]) => {
+        const term = document.createElement("dt");
+        term.textContent = label;
+        const description = document.createElement("dd");
+        description.textContent = value;
+        detailsGrid.append(term, description);
+      });
+      detailsCard.classList.add("visible");
+    }
+
+    function showJointDetails(joint) {
+      const connections = members
+        .filter(member => member.a === joint.id || member.b === joint.id)
+        .map(member => member.id);
+      const type = joint.support ? "Required pin/roller support" : joint.deck ? "Fixed deck joint" : "User joint";
+      showDetails("Joint details", [
+        ["Location", `(${joint.x}, ${joint.y}) ft`],
+        ["Type", type],
+        ["Members", connections.length ? connections.join(", ") : "None"]
+      ]);
+    }
+
+    function showMemberDetails(member) {
+      const a = joints.find(joint => joint.id === member.a);
+      const b = joints.find(joint => joint.id === member.b);
+      const length = Math.hypot(b.x - a.x, b.y - a.y);
+      showDetails("Member details", [
+        ["Member ID", member.id],
+        ["End joints", `${member.a} — ${member.b}`],
+        ["Length", `${length.toFixed(2)} ft`],
+        ["Cost", `$${(length * 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
+        ["Axial force", "0 lb · unloaded"],
+        ["Force state", "No vehicle load applied"]
+      ]);
+
+      const fbd = document.createElement("div");
+      fbd.className = "member-fbd";
+      fbd.innerHTML = `
+        <svg viewBox="0 0 230 92" role="img" aria-label="Free body diagram for the selected member">
+          <defs>
+            <marker id="fbdArrowHead" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#356ae6"></path>
+            </marker>
+          </defs>
+          <line x1="55" y1="46" x2="175" y2="46" class="fbd-member"></line>
+          <circle cx="55" cy="46" r="5" fill="#e7efff" stroke="#356ae6" stroke-width="2"></circle>
+          <circle cx="175" cy="46" r="5" fill="#e7efff" stroke="#356ae6" stroke-width="2"></circle>
+          <line x1="27" y1="46" x2="48" y2="46" class="fbd-arrow"></line>
+          <line x1="203" y1="46" x2="182" y2="46" class="fbd-arrow"></line>
+          <text x="115" y="24" class="fbd-label">0 lb axial force</text>
+          <text x="55" y="69" class="fbd-label">${member.a}</text>
+          <text x="175" y="69" class="fbd-label">${member.b}</text>
+        </svg>`;
+      detailsCard.append(fbd);
+    }
+
+    function handleJoint(id) {
+      if (tool === "delete") {
+        const joint = joints.find(item => item.id === id);
+        if (joint.fixed || joint.support || joint.deck) {
+          setStatus("Fixed deck joints and required supports cannot be deleted.");
+          return;
+        }
+        record();
+        const removedCount = members.filter(member => member.a === id || member.b === id).length;
+        members = members.filter(member => member.a !== id && member.b !== id);
+        joints = joints.filter(item => item.id !== id);
+        selectedJoint = null;
+        selectedMember = null;
+        clearDetails();
+        setStatus(`Joint deleted along with ${removedCount} connected member${removedCount === 1 ? "" : "s"}.`);
+        render();
+        return;
+      }
+      if (tool === "member") {
+        if (selectedJoint === id) { selectedJoint = null; hint.textContent = "Choose two different joints to connect."; }
+        else if (!selectedJoint) { selectedJoint = id; hint.textContent = "Now choose the second joint."; setStatus("First joint selected."); }
+        else {
+          const exists = members.some(member => (member.a === selectedJoint && member.b === id) || (member.a === id && member.b === selectedJoint));
+          if (exists) { setStatus("Those joints already have a member."); return; }
+          record();
+          members.push({ id: `m${Date.now()}`, a: selectedJoint, b: id });
+          selectedJoint = null;
+          hint.textContent = "Choose two joints to add a member.";
+          setStatus("Member added.");
+          render();
+        }
+        render();
+        return;
+      }
+      selectedJoint = id;
+      selectedMember = null;
+      const joint = joints.find(item => item.id === id);
+      setStatus(`${joint.fixed ? "Fixed" : "User"} joint selected at (${joint.x}, ${joint.y}) ft.`);
+      if (tool === "select") showJointDetails(joint);
+      render();
+    }
+
+    function handleMember(id) {
+      if (tool !== "delete") {
+        selectedMember = id;
+        selectedJoint = null;
+        setStatus(tool === "select" ? "Member selected." : "Member selected. Choose Delete members to remove it.");
+        if (tool === "select") showMemberDetails(members.find(member => member.id === id));
+        render();
+        return;
+      }
+      record();
+      members = members.filter(member => member.id !== id);
+      selectedMember = null;
+      setStatus("Member deleted.");
+      render();
+    }
+
+    jointForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const x = Number(jointXInput.value);
+      const y = Number(jointYInput.value);
+      if (tool !== "joint") {
+        tool = "joint";
+        document.querySelector('[data-tool="joint"]').click();
+      }
+      if (x < 0 || x > 60 || y < 0 || y > 20) { setStatus("Place joints inside the 60 ft by 20 ft build area."); return; }
+      if (!Number.isInteger(x) || !Number.isInteger(y)) { setStatus("Joint locations must use whole feet on the 1 ft grid."); return; }
+      if (joints.some(joint => joint.x === x && joint.y === y)) { setStatus("A joint already exists at that grid point."); return; }
+      record();
+      joints.push({ id: `u${Date.now()}`, x, y, fixed: false, deck: false });
+      setStatus(`Joint added at (${x}, ${y}) ft.`);
+      render();
+    });
+
+    document.querySelectorAll("[data-tool]").forEach(button => button.addEventListener("click", () => {
+      tool = button.dataset.tool;
+      selectedJoint = null;
+      selectedMember = null;
+      document.querySelectorAll("[data-tool]").forEach(item => item.classList.toggle("active", item === button));
+      const messages = {
+        select: ["Select a joint or member to inspect it.", "Select a joint or member."],
+        joint: ["Enter X and Y coordinates, then submit the form.", "Enter a joint location in feet."],
+        member: ["Choose two joints to connect them.", "Choose the first joint."],
+        delete: ["Click a member or user joint to delete it.", "Click a member or user joint to remove it."]
+      };
+      clearDetails();
+      jointForm.hidden = tool !== "joint";
+      hint.textContent = messages[tool][0];
+      setStatus(messages[tool][1]);
+      render();
+    }));
+
+    undoButton.addEventListener("click", () => {
+      if (!history.length) return;
+      restore(history.pop());
+      undoButton.disabled = !history.length;
+      setStatus("Last edit undone.");
+    });
+
+    document.querySelector("#reset").addEventListener("click", () => {
+      if (!confirm("Reset the bridge to the required deck joints and supports?")) return;
+      record();
+      joints = starterJoints.map(joint => ({ ...joint }));
+      members = starterMembers.map(member => ({ ...member }));
+      selectedJoint = null;
+      selectedMember = null;
+      clearDetails();
+      setStatus("Warren truss restored with the required deck joints and supports.");
+      render();
+    });
+
+    document.querySelectorAll("[data-mode]").forEach(button => button.addEventListener("click", () => {
+      document.querySelectorAll("[data-mode]").forEach(item => item.classList.toggle("active", item === button));
+      if (button.dataset.mode === "test") {
+        setStatus("Test mode is planned next. Return to Build mode to continue editing.");
+        document.querySelector(".tool-list").style.opacity = ".45";
+      } else {
+        setStatus("Starter Warren truss loaded. Add, connect, or delete members to customize it.");
+        document.querySelector(".tool-list").style.opacity = "1";
+      }
+    }));
+
+    render();
+  </script>
+</body>
+</html>
