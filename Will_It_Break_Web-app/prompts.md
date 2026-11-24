@@ -1,5 +1,30 @@
 # Prompt Log
 
+## 2026-11-23
+- **Asked:** Add a distinct vehicle animation for each of the four test vehicles.
+- **Changed:** Added separate SVG graphics for the car, loaded dump truck, semi truck, and fire engine while preserving the selected vehicle's axle-positioned drive animation.
+- **Worked:** Yes; browser verification rendered a different SVG shape set for all four vehicle selections.
+
+## 2026-11-23
+- **Asked:** Add a celebration screen when all four vehicles complete the bridge.
+- **Changed:** Added a confetti overlay with a challenge-complete card and close button. It appears only after all four vehicle scoreboard entries are passed.
+- **Worked:** Yes; browser verification showed the celebration card with 90 confetti pieces and confirmed the Keep designing button closed it.
+
+## 2026-11-23
+- **Asked:** Default to the Select / Inspect tool after running a vehicle in Test mode.
+- **Changed:** Activate Select / Inspect when entering Test mode, starting or resetting a vehicle run, and returning to Build mode.
+- **Worked:** Yes; browser verification confirmed Select / Inspect was active during a run and after returning to Build mode.
+
+## 2026-11-23
+- **Asked:** Make tension member free-body diagram arrows point outward.
+- **Changed:** Updated member free-body arrow directions to point outward when axial force is tensile and inward when compressive.
+- **Worked:** Yes; browser verification found a 833 lb tension member and confirmed the left arrow ran outward from x=48 toward x=27.
+
+## 2026-11-20
+- **Asked:** Create a prototype of Test mode.
+- **Changed:** Added vehicle selection, drive/pause/reset controls, animated vehicle travel, method-of-joints member-force solving, green/yellow/red/black member utilization colors, failure stopping, and a four-vehicle scoreboard.
+- **Worked:** Yes; browser verification opened Test mode, ran the semi, stopped at a failed top member, and updated its scoreboard status to Failed.
+
 ## 2026-11-20
 - **Asked:** Allow the delete build tool to delete joints as well as members.
 - **Changed:** Renamed the delete tool to Delete elements and enabled deletion of user joints. Fixed deck joints and required supports remain protected. Deleting a user joint removes its connected members.
